@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title><![CDATA[stoneyang's blog]]></title>
+  <subtitle><![CDATA[学无止境]]></subtitle>
+  <link href="/atom.xml" rel="self"/>
+  <link href="http://stoneyang.github.io/"/>
+  <updated>2014-08-14T23:15:35.831Z</updated>
+  <id>http://stoneyang.github.io/</id>
+  
+  <author>
+    <name><![CDATA[stoneyang]]></name>
+    <email><![CDATA[stoneyang0915@gmail.com]]></email>
+  </author>
+  
+  <generator uri="http://zespia.tw/hexo/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[Hello World!]]></title>
+    <link href="http://stoneyang.github.io/2014/08/14/HelloWorld/"/>
+    <id>http://stoneyang.github.io/2014/08/14/HelloWorld/</id>
+    <published>2014-08-14T23:15:35.831Z</published>
+    <updated>2014-08-14T23:15:35.831Z</updated>
+    <content type="html"><![CDATA[<p>Hello World!</p>
+
+<h2 id="数据采集">数据采集</h2>
+<p>Ceilometer的数据采集方式主要分为Poll和Push方式两种。</p>
+<p>其中Push方式主要采集为OpenStack中各个组件模块中无法定时主动获取的事件消息，例如：虚拟机的创建，镜像的上传等等。该种方式的消息的采集依赖各个组件在事件发生时，依赖Ceilometer提供的消息机制将事件消息上报至消息队列当中。然后由Ceilometer-Collector中的notification-agent收集消息队列中的事件消息，然后交由指定的Pipeline将消息转换为指定的采样数据（Samples），转换之后的采样数据会被重新发送至消息队列当中，然后由Collector收集处理并存入数据库当中（MongoDB）。主要架构如下图：</p>
+<p>Poll方式主要采集OpenStack中的各个组件的统计数据和计算节点中的实时数据（该数据也是可以被随时统计获取的）。<br>在Controller节点上，Poll方式主要是启动相应的轮询进程（Pollsters)，依靠轮询进程定期调用组件模块的APIs获取各个组件的数据信息。然后将数据交由Pipeline进行处理，最后由Collector处理存储。此过程与上述Push方式一致。</p>
+<p>在Compute节点上，Poll方式也是启动相应的轮询进程（Pollsters)，依靠轮询进程定期查询相应的信息，只是在数据采集方式上，采用虚拟机的相关驱动获取虚拟机的信息，目前主要的部署方案都是采用KVM-QEMU实现虚拟化，因此，底层信息获取上，采用的为LibVirt操纵虚拟机，同时也是通过LibVirt获取虚拟机的相关信息。当数据被采集之后，其之后的处理流程与上述两种方式都是一致的。</p>
+<h2 id="数据处理">数据处理</h2>
+<p>前面的数据采集工作完成之后，采集来的数据会交由Pipeline进行数据处理，Pipeline主要实现的是一个数据处理链的功能。Pipeline会根据不同的配置将0个或一个或多个Transformers组装成为一条数据处理链，在这条数据处理链的末端，会被装配一个Publisher。当数据进入这条数据处理链后，会被Transformers加工处理，然后由Publisher发送至消息队列当中，由Collector收集。</p>
+<p>Collector会时刻监听着消息队列，从消息队列中获取监控数据，然后将数据存入MongoDB中进行持久化。</p>
+<h2 id="参考文档">参考文档</h2>
+<p>1.<a href="http://docs.openstack.org/developer/ceilometer/architecture.html#high-level-description" target="_blank" rel="external">OpenStack System Architecture</a><br>2.<a href="http://niusmallnan.github.io/_build/html/_templates/openstack/ceilometer_collect.html" target="_blank" rel="external">ceilometer的数据采集机制</a><br>3.<a href="http://www.cnblogs.com/alexyang8/archive/2013/02/18/2915981.html" target="_blank" rel="external">OpenStack Ceilometer简介</a></p>
+]]></content>
+    <summary type="html"><![CDATA[<p>Hello, World's Summary</p>
+]]></summary>
+    
+  </entry>
+  
+</feed>
